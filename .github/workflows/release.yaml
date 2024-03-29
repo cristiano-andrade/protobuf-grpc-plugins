@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         lang: [ python ]
-        version: [ 1.54.1 ]
+        version: [ 1.62.1 ]
         os: [ ubuntu-latest, macos-latest ]
     env:
       VERSION: ${{ matrix.version }}
