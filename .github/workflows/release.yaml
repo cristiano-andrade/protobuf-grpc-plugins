@@ -47,8 +47,7 @@ jobs:
           bazel build src/compiler:grpc_${{ env.LANG }}_plugin --enable_platform_specific_config
       - name: Package
         run: |
-          cd bazel-bin/src/compiler/
-          cp grpc_${{ env.LANG }}_plugin protoc-gen-grpc-${{ env.LANG }}
+          cp bazel-bin/src/compiler/grpc_${{ env.LANG }}_plugin protoc-gen-grpc-${{ env.LANG }}
           tar czf protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz protoc-gen-grpc-${{ env.LANG }}
       - name: Release
         uses: softprops/action-gh-release@v2
