@@ -3,10 +3,19 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: write
 jobs:
-  linux:
-    name: linux@amd64
-    runs-on: ubuntu-latest
+  artifacts:
+    strategy:
+      matrix:
+        lang: [ python ]
+        version: [ 1.54.1 ]
+        os: [ ubuntu-latest, macos-latest ]
+    env:
+      VERSION: ${{ matrix.version }}
+      LANG: ${{ matrix.lang }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,23 +25,20 @@ jobs:
       - name: Build
         run: |
           echo "Building..."
+          git checkout v${{ env.VERSION }} -b v${{ env.VERSION }}
           bazel build src/compiler:grpc_python_plugin
       - name: Asrchive artifacts
-        env:
-          VERSION: 1.54.1
         run: |
           cd bazel-bin/src/compiler/
-          cp grpc_python_plugin grpc-python-plugin
-          tar czf grpc-python-plugin.${VERSION}.linux.amd64.tar.gz grpc-python-plugin
-      - name: Upload Release Asset for grpc_python_plugin
+          cp grpc_${{ env.LANG }}_plugin grpc-${{ env.LANG }}-plugin
+          tar czf grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz grpc-${{ env.LANG }}-plugin
+      - name: Upload release grpc_${{ env.LANG }}_plugin
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: bazel-bin/src/compiler/grpc-python-plugin.${{ env.VERSION }}.linux.amd64.tar.gz
+          files: bazel-bin/src/compiler/grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz
           tag_name: v${{ env.VERSION }}
           release_name: v${{ env.VERSION }}
           body: |
-            grpc_python_plugin v${{ env.VERSION }}
+            grpc_${{ env.LANG }}_plugin v${{ env.VERSION }}
           draft: false
           prerelease: false
