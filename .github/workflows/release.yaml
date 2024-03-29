@@ -27,10 +27,16 @@ jobs:
     strategy:
       matrix:
         lang: [ python ]
-        os: [ ubuntu, macos ]
+        os: [ ubuntu , macos ]
+        include:
+          - os: ubuntu
+            platform: linux-x86_64
+          - os: macos
+            platform: darwin-x86_64
     env:
       LANG: ${{ matrix.lang }}
       OS: ${{ matrix.os }}
+      PLATFORM: ${{ matrix.platform }}
     name: protoc-gen-grpc-${{matrix.lang}}-${{matrix.os}}
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -63,10 +69,10 @@ jobs:
       - name: Package
         run: |
           cp bazel-bin/src/compiler/grpc_${{ env.LANG }}_plugin protoc-gen-grpc-${{ env.LANG }}
-          tar czf protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz protoc-gen-grpc-${{ env.LANG }}
+          tar czf protoc-gen-grpc-${{ env.LANG }}-${{ env.PLATFORM }}.tar.gz protoc-gen-grpc-${{ env.LANG }}
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz
-          asset_path:  protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz
+          asset_name: protoc-gen-grpc-${{ env.LANG }}-${{ env.PLATFORM }}.tar.gz
+          asset_path:  protoc-gen-grpc-${{ env.LANG }}-${{ env.PLATFORM }}.tar.gz
           asset_content_type: application/gzip
