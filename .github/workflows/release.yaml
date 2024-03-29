@@ -3,26 +3,20 @@ on:
   push:
     branches:
       - main
-permissions:
-  contents: write
 jobs:
-  artifacts:
+  proto-gen-release:
     strategy:
       matrix:
         lang: [ python ]
-        version: [ 1.62.1 ]
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu, macos ]
     env:
-      VERSION: ${{ matrix.version }}
       LANG: ${{ matrix.lang }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: grpc/grpc
-          fetch-tags: true
-          ref: refs/tags/v${{ env.VERSION }}
       - name: Build
         run: |
           echo "Building..."
@@ -31,14 +25,4 @@ jobs:
         run: |
           cd bazel-bin/src/compiler/
           cp grpc_${{ env.LANG }}_plugin grpc-${{ env.LANG }}-plugin
-          tar czf grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz grpc-${{ env.LANG }}-plugin
-      - name: Release grpc_${{ env.LANG }}_plugin
-        uses: softprops/action-gh-release@v2
-        with:
-          files: bazel-bin/src/compiler/grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz
-          tag_name: v${{ env.VERSION }}
-          release_name: v${{ env.VERSION }}
-          body: |
-            grpc_${{ env.LANG }}_plugin v${{ env.VERSION }}
-          draft: false
-          prerelease: false
+          tar czf grpc-${{ env.LANG }}-plugin-linux-amd64.tar.gz grpc-${{ env.LANG }}-plugin
