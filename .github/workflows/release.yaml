@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: |
           echo "Building..."
-          git checkout v${{ env.VERSION }} -b v${{ env.VERSION }}
+          git checkout tags/v${{ env.VERSION }} -b v${{ env.VERSION }}
           bazel build src/compiler:grpc_python_plugin
       - name: Asrchive artifacts
         run: |
