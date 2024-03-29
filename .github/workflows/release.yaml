@@ -26,13 +26,13 @@ jobs:
       - name: Build
         run: |
           echo "Building..."
-          bazel build src/compiler:grpc_python_plugin
-      - name: Asrchive artifacts
+          bazel build src/compiler:grpc_${{ env.LANG }}_plugin --enable_platform_specific_config
+      - name: Package
         run: |
           cd bazel-bin/src/compiler/
           cp grpc_${{ env.LANG }}_plugin grpc-${{ env.LANG }}-plugin
           tar czf grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz grpc-${{ env.LANG }}-plugin
-      - name: Upload release grpc_${{ env.LANG }}_plugin
+      - name: Release grpc_${{ env.LANG }}_plugin
         uses: softprops/action-gh-release@v2
         with:
           files: bazel-bin/src/compiler/grpc-${{ env.LANG }}-plugin.${{ env.VERSION }}.linux.amd64.tar.gz
