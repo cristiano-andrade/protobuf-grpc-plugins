@@ -22,10 +22,10 @@ jobs:
         with:
           repository: grpc/grpc
           fetch-tags: true
+          ref: refs/tags/v${{ env.VERSION }}
       - name: Build
         run: |
           echo "Building..."
-          git checkout tags/v${{ env.VERSION }} -b v${{ env.VERSION }}
           bazel build src/compiler:grpc_python_plugin
       - name: Asrchive artifacts
         run: |
