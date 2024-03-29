@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 jobs:
-  proto-gen-release:
+  proto-gen-grpc-plugin:
     strategy:
       matrix:
         lang: [ python ]
@@ -14,6 +14,7 @@ jobs:
     env:
       LANG: ${{ matrix.lang }}
       OS: ${{ matrix.os }}
+    name: protoc-gen-grpc-${{matrix.lang}}-${{matrix.os}}
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
@@ -49,6 +50,7 @@ jobs:
           tar czf protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz protoc-gen-grpc-${{ env.LANG }}
       - name: Release
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: bazel-bin/src/compiler/protoc-gen-grpc-${{ env.LANG }}-${{ env.OS }}.tar.gz
           body: |
