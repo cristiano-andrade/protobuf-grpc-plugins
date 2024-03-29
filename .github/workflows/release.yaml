@@ -1,0 +1,38 @@
+name: Release Plugins
+on:
+  push:
+    branches:
+      - main
+jobs:
+  linux:
+    name: linux@amd64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: grpc/grpc
+          ref: tags/v1.54.1
+      - name: Build
+        run: |
+          echo "Building..."
+          bazel build src/compiler:grpc_python_plugin
+      - name: Asrchive artifacts
+        env:
+          VERSION: 1.54.1
+        run: |
+          cd bazel-bin/src/compiler/
+          cp grpc_python_plugin grpc-python-plugin
+          tar czf grpc-python-plugin.${VERSION}.linux.amd64.tar.gz grpc-python-plugin
+      - name: Upload Release Asset for grpc_python_plugin
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: bazel-bin/src/compiler/grpc-python-plugin.${{ env.VERSION }}.linux.amd64.tar.gz
+          tag_name: v${{ env.VERSION }}
+          release_name: v${{ env.VERSION }}
+          body: |
+            grpc_python_plugin v${{ env.VERSION }}
+          draft: false
+          prerelease: false
