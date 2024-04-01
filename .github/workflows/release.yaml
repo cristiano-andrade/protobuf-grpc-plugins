@@ -7,7 +7,7 @@ permissions:
   contents: write
 jobs:
   create_release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/')
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         lang: [ python ]
-        os: [ ubuntu , macos ]
+        os: [ ubuntu-20.04 , macos-latest ]
         include:
           - os: ubuntu
             platform: linux-x86_64
@@ -39,7 +39,7 @@ jobs:
       OS: ${{ matrix.os }}
       PLATFORM: ${{ matrix.platform }}
     name: protoc-gen-grpc-${{matrix.lang}}-${{matrix.os}}
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
